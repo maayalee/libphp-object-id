@@ -1,0 +1,27 @@
+{
+  "name":"libphp-object-id",
+  "version":"0.0.1",
+  "description":"",
+  "autoload": {
+    "psr-4": {
+      "libphp\\object_id\\":"src/libphp/object_id",
+      "libphp\\tests\\object_id\\":"tests/src/libphp/tests/object_id"
+    }
+  },
+  "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/maayalee/libphp-core.git"
+        }
+  ],
+  "require": {
+        "libphp-core": "dev-master"
+  },
+  "license":"MIT",
+  "authors": [
+    {
+      "name":"Lee, Hyeon-gi",
+      "email":"maaya.lee@gmail.com"
+    }
+  ]
+}
