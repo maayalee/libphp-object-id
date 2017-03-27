@@ -1,6 +1,8 @@
 <?php
 namespace libphp\object_id;
 
+use libphp\core\time;
+
 /**
  * @class object_id
  *
@@ -8,7 +10,8 @@ namespace libphp\object_id;
  *
  *         Mongodb의 ObjectID도 이와 유사한 방식을 사용한다. 
  *
- *         Timestamp(4byte) + Machine ID(3byte) + Process ID(2byte) + Increment count(2byte)
+ *         Timestamp(4byte) + Machine ID(4byte) + Process ID(2byte) + Increment count(2byte)
+ *
  * @authoer Lee, Hyeon-gi
  */ 
 class object_id extends id {
@@ -16,27 +19,32 @@ class object_id extends id {
   const USHORT_2BYTE_LE = "v";
 
   const TIMESTAMPE_BYTE = 4;
-  const MACHINE_ID_BYTE = 3;
+  const MACHINE_ID_BYTE = 4;
   const PROCESS_ID_BYTE = 2;
   const INCREMENT_COUNT_BYTE = 2;
-  const TOTAL_BYTE = 11;
+  const MAX_INCREMENT_COUNT_PER_SEC = 65535;
 
   public function __construct() {
   }
   
-  public function init($current_time = -1, $max_generate_count = ID_Timestamp::MAX_GENERATE_COUNT_PER_SEC) {
-    $timestamp = ID_Timestamp::get_instance()->generate($current_time, $max_generate_count);
+  public function init($time, $max_increment_count) {
+    $timestamp = id_timestamp::get_instance()->generate($time, $max_increment_count);
     $this->binary = '';
     $this->binary .= pack(self::ULONG_4BYTE_LE, $timestamp['gen_timestamp']);
-    $this->binary .= ID::create_hashed_machine_name(self::MACHINE_ID_BYTE);
+    $this->binary .= id::create_hashed_machine_name(self::MACHINE_ID_BYTE);
     $this->binary .= pack(self::USHORT_2BYTE_LE, ID::create_process_id());
     $this->binary .= pack(self::USHORT_2BYTE_LE, $timestamp['gen_increment']);
   }
 
   public function init_by_string($hex_string) {
-    $this->binary = hex2bin($hex_string);
+    $this->binary = hex2bin($string);
   }
 
+  /**
+   * 헥스 문자열로 변환한다.
+   *
+   * @return string hex str
+   */
   public function to_string() {
     return bin2hex($this->binary);
   } 
@@ -68,7 +76,8 @@ class object_id extends id {
    */ 
   private function unpacks() {
     if (!$this->unpacked) {
-      ASSERT('strlen($this->binary) == self::TOTAL_BYTE');
+      ASSERT('strlen($this->binary) == (self::TIMESTAMPE_BYTE + self::MACHINE_ID_BYTE + self::PROCESS_ID_BYTE + self::INCREMENT_COUNT_BYTE)');
+
       $result = array();
       $offset = 0;
       $data = unpack(self::ULONG_4BYTE_LE, substr($this->binary, $offset, self::TIMESTAMPE_BYTE));
@@ -98,14 +107,27 @@ class object_id extends id {
   /**
    * object_id를 생성한다.
    *
-   * @param current_time int 유닉스 타임 스탬프
-   * @param max_generate_count int 초당 생성할 수 있는 아이디 최대 갯수
+   * @return object_id
+   */
+  public static function create() {
+    $result = new object_id();
+    $result->init(time::get_time(), self::MAX_INCREMENT_COUNT_PER_SEC);
+    return $result;
+
+  }
+
+  /**
+   * object_id를 생성한다.
+   *
+   * @param max_increment_count int 초당 생성할 수 있는 아이디 최대 갯수
    *
    * @return object_id
    */
-  public static function create($current_time = -1, $max_generate_count = ID_Timestamp::MAX_GENERATE_COUNT_PER_SEC) {
+  public static function create_by_time($time, $max_increment_count) {
+    ASSERT($max_increment_count < self::MAX_INCREMENT_COUNT_PER_SEC);
+
     $result = new object_id();
-    $result->init($current_time, $max_generate_count);
+    $result->init($time, $max_increment_count);
     return $result;
   }
 }

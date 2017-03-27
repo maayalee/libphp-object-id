@@ -19,25 +19,26 @@ class object_id_test extends test_case {
 
   public function test_create_id() {
     $timestamp = time::get_time();
-    $id = object_id::create($timestamp);
+
+    $id = object_id::create_by_time($timestamp, $this->get_max_increment_count());
     $this->assert($id->get_timestamp() == $timestamp, "get unpack timestamp");
   }
 
   public function test_not_duplicated_ids() {
     $timestamp = time::get_time();
-    $ids = $this->generate_ids($this->get_max_generate_count(), $timestamp);
-    $this->assert(count($ids) == $this->get_max_generate_count(), 'not duplicated ids');
+    $ids = $this->generate_ids($this->get_max_increment_count(), $timestamp);
+    $this->assert(count($ids) == $this->get_max_increment_count(), 'not duplicated ids');
   }
 
   public function test_reset_increment() {
     $timestamp = time::get_time();
-    $id = object_id::create($timestamp);
+    $id = object_id::create_by_time($timestamp, $this->get_max_increment_count());
     $this->assert(1 == id_timestamp::get_instance()->get_increment(), 'inc is 1');
-    $id = object_id::create($timestamp);
+    $id = object_id::create_by_time($timestamp, $this->get_max_increment_count());
     $this->assert(2 == id_timestamp::get_instance()->get_increment(), 'inc is 2');
 
     $reset_increment_timestamp = $timestamp + 1;
-    $id = object_id::create($reset_increment_timestamp);
+    $id = object_id::create_by_time($reset_increment_timestamp, $this->get_max_increment_count());
     $this->assert(1 == id_timestamp::get_instance()->get_increment(), 'inc is 1');
   }
 
@@ -50,12 +51,12 @@ class object_id_test extends test_case {
 
   public function test_throw_increment_count_overflow() {
     $timestamp = time::get_time();
-    $this->assert(false == $this->process_generate_ids($this->get_max_generate_count() + 1, $timestamp));
+    $this->assert(false == $this->process_generate_ids($this->get_max_increment_count() + 1, $timestamp));
   }
 
   private function process_generate_ids($count, $current_time) {
     try {
-      $this->generate_ids($count, $current_time, $this->get_max_generate_count());
+      $this->generate_ids($count, $current_time, $this->get_max_increment_count());
     }
     catch (backward_timestamp $e) {
       return false;
@@ -69,7 +70,7 @@ class object_id_test extends test_case {
   private function generate_ids($count, $current_time = -1) {
     $ids = array();
     for ($i = 0; $i < $count; $i++) {
-      $id = object_id::create($current_time, $this->get_max_generate_count());
+      $id = object_id::create_by_time($current_time, $this->get_max_increment_count());
       array_push($ids, $id->to_string());
     }
     return array_unique($ids);
@@ -82,7 +83,7 @@ class object_id_test extends test_case {
   public function tear_down() {
   }
 
-  private function get_max_generate_count() {
+  private function get_max_increment_count() {
     return 10;
   }
 

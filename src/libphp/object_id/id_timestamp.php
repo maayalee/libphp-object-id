@@ -6,22 +6,15 @@ use libphp\object_id\errors\backward_timestamp;
 use libphp\object_id\errors\increment_count_overflow;
 
 class id_timestamp {
-  const MAX_GENERATE_COUNT_PER_SEC = 65535;
-  
   public function __construct() {
   }
- 
   
-  public function generate($current_time = -1, $max_generate_count = self::MAX_GENERATE_COUNT_PER_SEC) {
-    if (-1 == $current_time)
-      $current_time = time::get_time();
-      
-
+  public function generate($current_time, $max_increment_count) {
     if ($current_time < $this->last_timestamp)
       throw new backward_timestamp('current time is little than last time');
 
     if ($current_time == $this->last_timestamp) {
-      if ($this->increment >= $max_generate_count)
+      if ($this->increment >= $max_increment_count)
         throw new increment_count_overflow('');
     }
     else {
@@ -51,7 +44,7 @@ class id_timestamp {
   public static function get_instance() {
     static $instance = null;
     if (null == $instance) {
-      $instance = new ID_Timestamp();
+      $instance = new id_timestamp();
     }
     return $instance;
   }
