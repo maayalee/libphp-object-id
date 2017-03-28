@@ -1,9 +1,9 @@
 <?php
 namespace libphp\tests\object_id;
 
-use libphp\object_id\increment_counter;
+use libphp\object_id\counter;
 
-class test_increment_counter extends increment_counter {
+class test_increment_counter extends counter {
   public function set_current_time($current_time) {
     $this->current_time = $current_time;
   }

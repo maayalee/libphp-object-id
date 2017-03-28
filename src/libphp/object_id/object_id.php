@@ -31,11 +31,11 @@ class object_id extends id {
   const INCREMENT_COUNT_BYTE = 2;
   const MAX_INCREMENT_COUNT_PER_SEC = 65535;
 
-  public function __construct($increment_counter) {
-    $count = $increment_counter->inc();
+  public function __construct($counter) {
+    $count = $counter->inc();
 
     $this->binary = '';
-    $this->binary .= $this->create_timestamp($increment_counter->get_last_inc_time());
+    $this->binary .= $this->create_timestamp($counter->get_last_inc_time());
     $this->binary .= $this->create_machine_id();
     $this->binary .= $this->create_process_id();
     $this->binary .= $this->create_increment_count($count); 
@@ -142,11 +142,11 @@ class object_id extends id {
   /**
    * object_id를 생성한다.
    *
-   * @param increment_counter increment_counter 타임스탬프 정보를 생성하는 객체
+   * @param counter counter 타임스탬프 정보를 생성하는 객체
    * @return object_id
    */
-  public static function create($increment_counter) {
-    $result = new object_id($increment_counter);
+  public static function create($counter) {
+    $result = new object_id($counter);
     return $result;
 
   }

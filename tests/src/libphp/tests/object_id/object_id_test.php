@@ -18,8 +18,8 @@ class object_id_test extends test_case {
   }
 
   public function test_create_id() {
-    $id = object_id::create($this->increment_counter);
-    $this->assert($id->get_timestamp() == $this->increment_counter->get_last_inc_time(), 
+    $id = object_id::create($this->counter);
+    $this->assert($id->get_timestamp() == $this->counter->get_last_inc_time(), 
       "get unpack timestamp");
   }
 
@@ -29,24 +29,24 @@ class object_id_test extends test_case {
   }
 
   public function test_reset_increment() {
-    $id = object_id::create($this->increment_counter);
-    $this->assert(1 == $this->increment_counter->get_increment(), 'inc is 1');
-    $id = object_id::create($this->increment_counter);
-    $this->assert(2 == $this->increment_counter->get_increment(), 'inc is 2');
+    $id = object_id::create($this->counter);
+    $this->assert(1 == $this->counter->get_increment(), 'inc is 1');
+    $id = object_id::create($this->counter);
+    $this->assert(2 == $this->counter->get_increment(), 'inc is 2');
 
-    $this->increment_counter->inc_current_time();
-    $id = object_id::create($this->increment_counter);
-    $this->assert(1 == $this->increment_counter->get_increment(), 'inc is 1');
+    $this->counter->inc_current_time();
+    $id = object_id::create($this->counter);
+    $this->assert(1 == $this->counter->get_increment(), 'inc is 1');
   }
 
   public function test_throw_backward_timestamp() {
     $this->assert(true == $this->process_generate_ids(1));
-    $this->increment_counter->dec_current_time();
+    $this->counter->dec_current_time();
     $this->assert(false == $this->process_generate_ids(1));
   }
 
   public function test_throw_increment_count_overflow() {
-    $this->increment_counter->reset(1);
+    $this->counter->reset(1);
     $this->assert(false == $this->process_generate_ids(2));
   }
 
@@ -66,23 +66,23 @@ class object_id_test extends test_case {
   private function generate_ids($count) {
     $ids = array();
     for ($i = 0; $i < $count; $i++) {
-      $id = object_id::create($this->increment_counter);
+      $id = object_id::create($this->counter);
       array_push($ids, $id->to_string());
     }
     return array_unique($ids);
   }
 
   public function set_up() {
-    $this->increment_counter = $this->create_increment_counter();
+    $this->counter = $this->create_counter();
     $timestamp = time::get_time();
-    $this->increment_counter->set_current_time($timestamp);
+    $this->counter->set_current_time($timestamp);
 
   }
 
   public function tear_down() {
   }
 
-  private function create_increment_counter() {
+  private function create_counter() {
     return new test_increment_counter($this->get_max_increment_count());
   }
 
@@ -90,7 +90,7 @@ class object_id_test extends test_case {
     return 10;
   }
 
-  private $increment_counter;
+  private $counter;
 
   public static function create_suite() {
     $suite = new test_suite('object_id_test');
