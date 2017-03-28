@@ -6,32 +6,36 @@ use libphp\object_id\errors\backward_timestamp;
 use libphp\object_id\errors\increment_count_overflow;
 
 class id_timestamp {
-  public function __construct() {
+  public function __construct($max_increment_count) {
+    $this->max_increment_count = $max_increment_count;
   }
   
-  public function generate($current_time, $max_increment_count) {
-    if ($current_time < $this->last_timestamp)
+  public function generate($current_time) {
+    if ($current_time < $this->last_time)
       throw new backward_timestamp('current time is little than last time');
 
-    if ($current_time == $this->last_timestamp) {
-      if ($this->increment >= $max_increment_count)
+    if ($this->is_same_sec($current_time)) {
+      if ($this->increment >= $this->max_increment_count)
         throw new increment_count_overflow('');
     }
     else {
       $this->increment = 0; 
     }
     $this->increment++;
-    $this->last_timestamp = $current_time;
-    return array('gen_timestamp'=>$current_time, 'gen_increment'=>$this->increment);
+    $this->last_time = $current_time;
+  }
+
+  private function is_same_sec($current_time) {
+    return $current_time == $this->last_time;
   }
 
   public function reset() {
     $this->increment = 0;
-    $this->last_timestamp = 0;
+    $this->last_time = 0;
   }
 
-  public function get_timestamp() {
-    return $this->last_timestamp;
+  public function get_time() {
+    return $this->last_time;
   }
 
   public function get_increment() {
@@ -39,13 +43,6 @@ class id_timestamp {
   }
 
   private $increment = 0; 
-  private $last_timestamp = 0;
-
-  public static function get_instance() {
-    static $instance = null;
-    if (null == $instance) {
-      $instance = new id_timestamp();
-    }
-    return $instance;
-  }
+  private $last_time = 0;
+  private $max_increment_count = 0;
 }

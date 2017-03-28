@@ -20,7 +20,7 @@ class object_id_test extends test_case {
   public function test_create_id() {
     $timestamp = time::get_time();
 
-    $id = object_id::create_by_time($timestamp, $this->get_max_increment_count());
+    $id = object_id::create($this->id_timestamp, $timestamp);
     $this->assert($id->get_timestamp() == $timestamp, "get unpack timestamp");
   }
 
@@ -32,14 +32,14 @@ class object_id_test extends test_case {
 
   public function test_reset_increment() {
     $timestamp = time::get_time();
-    $id = object_id::create_by_time($timestamp, $this->get_max_increment_count());
-    $this->assert(1 == id_timestamp::get_instance()->get_increment(), 'inc is 1');
-    $id = object_id::create_by_time($timestamp, $this->get_max_increment_count());
-    $this->assert(2 == id_timestamp::get_instance()->get_increment(), 'inc is 2');
+    $id = object_id::create($this->id_timestamp, $timestamp);
+    $this->assert(1 == $this->id_timestamp->get_increment(), 'inc is 1');
+    $id = object_id::create($this->id_timestamp, $timestamp);
+    $this->assert(2 == $this->id_timestamp->get_increment(), 'inc is 2');
 
     $reset_increment_timestamp = $timestamp + 1;
-    $id = object_id::create_by_time($reset_increment_timestamp, $this->get_max_increment_count());
-    $this->assert(1 == id_timestamp::get_instance()->get_increment(), 'inc is 1');
+    $id = object_id::create($this->id_timestamp, $reset_increment_timestamp);
+    $this->assert(1 == $this->id_timestamp->get_increment(), 'inc is 1');
   }
 
   public function test_throw_backward_timestamp() {
@@ -70,22 +70,28 @@ class object_id_test extends test_case {
   private function generate_ids($count, $current_time = -1) {
     $ids = array();
     for ($i = 0; $i < $count; $i++) {
-      $id = object_id::create_by_time($current_time, $this->get_max_increment_count());
+      $id = object_id::create($this->id_timestamp, $current_time);
       array_push($ids, $id->to_string());
     }
     return array_unique($ids);
   }
 
   public function set_up() {
-    id_timestamp::get_instance()->reset();
+    $this->id_timestamp = $this->create_id_timestamp();
   }
 
   public function tear_down() {
   }
 
+  private function create_id_timestamp() {
+    return new id_timestamp($this->get_max_increment_count());
+  }
+
   private function get_max_increment_count() {
     return 10;
   }
+
+  private $id_timestamp;
 
   public static function create_suite() {
     $suite = new test_suite('object_id_test');

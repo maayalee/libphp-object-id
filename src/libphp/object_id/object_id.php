@@ -27,13 +27,16 @@ class object_id extends id {
   public function __construct() {
   }
   
-  public function init($time, $max_increment_count) {
-    $timestamp = id_timestamp::get_instance()->generate($time, $max_increment_count);
+  public function init($id_timestamp, $time) {
+    $id_timestamp->generate($time);
+
+    ASSERT($id_timestamp->get_increment() < self::MAX_INCREMENT_COUNT_PER_SEC);
+
     $this->binary = '';
-    $this->binary .= pack(self::ULONG_4BYTE_LE, $timestamp['gen_timestamp']);
+    $this->binary .= pack(self::ULONG_4BYTE_LE, $id_timestamp->get_time());
     $this->binary .= id::create_hashed_machine_name(self::MACHINE_ID_BYTE);
     $this->binary .= pack(self::USHORT_2BYTE_LE, ID::create_process_id());
-    $this->binary .= pack(self::USHORT_2BYTE_LE, $timestamp['gen_increment']);
+    $this->binary .= pack(self::USHORT_2BYTE_LE, $id_timestamp->get_increment());
   }
 
   public function init_by_string($hex_string) {
@@ -107,27 +110,14 @@ class object_id extends id {
   /**
    * object_id를 생성한다.
    *
+   * @param id_timestamp id_timestamp 타임스탬프 정보를 생성하는 객체
+   * @param time int 현재 시각(Unix timestamp)
    * @return object_id
    */
-  public static function create() {
+  public static function create($id_timestamp, $time) {
     $result = new object_id();
-    $result->init(time::get_time(), self::MAX_INCREMENT_COUNT_PER_SEC);
+    $result->init($id_timestamp, $time);
     return $result;
 
-  }
-
-  /**
-   * object_id를 생성한다.
-   *
-   * @param max_increment_count int 초당 생성할 수 있는 아이디 최대 갯수
-   *
-   * @return object_id
-   */
-  public static function create_by_time($time, $max_increment_count) {
-    ASSERT($max_increment_count < self::MAX_INCREMENT_COUNT_PER_SEC);
-
-    $result = new object_id();
-    $result->init($time, $max_increment_count);
-    return $result;
   }
 }
