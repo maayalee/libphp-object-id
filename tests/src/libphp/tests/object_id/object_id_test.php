@@ -20,12 +20,12 @@ class object_id_test extends test_case {
   public function test_create_id() {
     $id = object_id::create($this->counter);
     $this->assert($id->get_timestamp() == $this->counter->get_last_inc_time(), 
-      "get unpack timestamp");
+    "get unpack timestamp");
   }
 
   public function test_not_duplicated_ids() {
-    $ids = $this->generate_ids($this->get_max_increment_count());
-    $this->assert(count($ids) == $this->get_max_increment_count(), 'not duplicated ids');
+    $ids = $this->generate_ids(1000);
+    $this->assert(count($ids) == 1000, 'not duplicated ids');
   }
 
   public function test_reset_increment() {
@@ -46,8 +46,8 @@ class object_id_test extends test_case {
   }
 
   public function test_throw_increment_count_overflow() {
-    $this->counter->reset(1);
-    $this->assert(false == $this->process_generate_ids(2));
+    $this->assert(true == $this->process_generate_ids($this->get_max_increment_count()));
+    $this->assert(false == $this->process_generate_ids($this->get_max_increment_count() + 1));
   }
 
   private function process_generate_ids($count) {
@@ -83,11 +83,11 @@ class object_id_test extends test_case {
   }
 
   private function create_counter() {
-    return new test_increment_counter($this->get_max_increment_count());
+    return new test_increment_counter();
   }
 
   private function get_max_increment_count() {
-    return 10;
+    return object_id::MAX_INCREMENT_COUNT_PER_SEC;
   }
 
   private $counter;
