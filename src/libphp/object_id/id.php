@@ -1,8 +1,6 @@
 <?php
 namespace libphp\object_id;
 
-use libphp\core\env;
-
 /**
  * @class id
  *

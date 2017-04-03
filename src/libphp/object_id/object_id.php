@@ -33,18 +33,15 @@ class object_id extends id {
   /**
    * object_id를 생성한다.
    *
-   * @param counter counter 타임스탬프 정보를 생성하는 객체
    * @return object_id
    */
-  public static function create($counter) {
+  public static function create($counter, $machine_name = '', $process_id = 0) {
     $instance = new object_id();
-    $instance->generate($counter);
-    return $instance;
-  }
-
-  public static function create_with_machine_id($counter, $machine_id) {
-    $instance = new object_id();
-    $instance->generate($counter, $machine_id);
+    if (empty($machine_name))
+      $machine_name = env::get_host_name();
+    if (empty($process_id))
+      $process_id = env::get_process_id();
+    $instance->generate($counter, $machine_name, $process_id);
     return $instance;
   }
 
@@ -75,16 +72,14 @@ class object_id extends id {
     $this->binary = hex2bin($hex);
   }
 
-  private function generate($counter, $machine_id = '', $process_id = 0) {
+  private function generate($counter, $machine_name, $process_id) {
     $count = $counter->inc();
     if ($count > self::MAX_INCREMENT_COUNT_PER_SEC)
       throw new increment_count_overflow('');
 
     $this->append_timestamp($counter->get_last_inc_time());
-    $this->append_machine_id(empty($builder->machine_id) ? 
-      env::get_host_name() : $builder->machine_id);
-    $this->append_process_id(empty($builder->process_id) ? 
-      env::get_process_id() : $builder->process_id);
+    $this->append_machine_id($machine_name);
+    $this->append_process_id($process_id);
     $this->append_increment_count($count);
   }
 

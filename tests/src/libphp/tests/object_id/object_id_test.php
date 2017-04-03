@@ -1,6 +1,7 @@
 <?php
 namespace libphp\tests\object_id;
 
+use libphp\core\env;
 use libphp\core\time;
 use libphp\test\test_case;
 use libphp\test\test_suite;
@@ -21,6 +22,15 @@ class object_id_test extends test_case {
     $id = object_id::create($this->counter);
     $this->assert($id->get_timestamp() == $this->counter->get_last_inc_time(), 
     "get unpack timestamp");
+    $this->assert_equal(substr(md5(env::get_host_name()),0,3),
+      $id->get_machine_id());
+    $this->assert_equal($id->get_process_id(), env::get_process_id());
+
+    $id = object_id::create($this->counter, '', 10);
+    $this->assert_equal(10, $id->get_process_id());
+
+    $id = object_id::create($this->counter, 'test-machine');
+    $this->assert_equal(substr(md5('test-machine'),0,3), $id->get_machine_id());
   }
 
   public function test_not_duplicated_ids() {
@@ -46,8 +56,10 @@ class object_id_test extends test_case {
   }
 
   public function test_throw_increment_count_overflow() {
-    $this->assert(true == $this->process_generate_ids($this->get_max_increment_count()));
-    $this->assert(false == $this->process_generate_ids($this->get_max_increment_count() + 1));
+    $this->assert(true == $this->process_generate_ids(
+      $this->get_max_increment_count()));
+    $this->assert(false == $this->process_generate_ids(
+      $this->get_max_increment_count() + 1));
   }
 
   private function process_generate_ids($count) {
