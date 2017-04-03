@@ -30,24 +30,22 @@ class object_id extends id {
   public function __construct() {
   }
 
-  /**
-   * object_id를 생성한다.
-   *
-   * @return object_id
-   */
-  public static function create($counter, $machine_name = '', $process_id = 0) {
+  public static function create_with_string($hex) {
+    $instance = new object_id();
+    $instance->load_string($hex);
+    return $instance;
+  }
+
+  public static function create_with_builder($builder) {
+    $machine_name = $builder->get_machine_name();
+    $process_id = $builder->get_process_id();
+
     $instance = new object_id();
     if (empty($machine_name))
       $machine_name = env::get_host_name();
     if (empty($process_id))
       $process_id = env::get_process_id();
-    $instance->generate($counter, $machine_name, $process_id);
-    return $instance;
-  }
-
-  public static function create_with_string($hex) {
-    $instance = new object_id();
-    $instance->load_string($hex);
+    $instance->generate($builder->get_counter(), $machine_name, $process_id);
     return $instance;
   }
 

@@ -8,28 +8,28 @@ use libphp\test\test_suite;
 use libphp\object_id\id;
 use libphp\object_id\increment_counter;
 use libphp\object_id\object_id;
+use libphp\object_id\object_id_builder;
 use libphp\object_id\errors\increment_count_overflow;
 use libphp\object_id\errors\backward_timestamp;
 
 class object_id_test extends test_case {
-  private $server;
-
   public function __construct($method_name) {
     parent::__construct($method_name);
   }
 
   public function test_create_id() {
-    $id = object_id::create($this->counter);
+    $id = object_id_builder::create($this->counter)->build();
     $this->assert($id->get_timestamp() == $this->counter->get_last_inc_time(), 
     "get unpack timestamp");
     $this->assert_equal(substr(md5(env::get_host_name()),0,3),
       $id->get_machine_id());
     $this->assert_equal($id->get_process_id(), env::get_process_id());
 
-    $id = object_id::create($this->counter, '', 10);
+    $id = object_id_builder::create($this->counter)->process_id(10)->build();
     $this->assert_equal(10, $id->get_process_id());
 
-    $id = object_id::create($this->counter, 'test-machine');
+    $id = object_id_builder::create($this->counter)->machine_name(
+      'test-machine')->build();
     $this->assert_equal(substr(md5('test-machine'),0,3), $id->get_machine_id());
   }
 
@@ -39,13 +39,13 @@ class object_id_test extends test_case {
   }
 
   public function test_reset_increment() {
-    $id = object_id::create($this->counter);
+    $id = object_id_builder::create($this->counter)->build();
     $this->assert(1 == $this->counter->get_increment(), 'inc is 1');
-    $id = object_id::create($this->counter);
+    $id = object_id_builder::create($this->counter)->build();
     $this->assert(2 == $this->counter->get_increment(), 'inc is 2');
 
     $this->counter->inc_current_time();
-    $id = object_id::create($this->counter);
+    $id = object_id_builder::create($this->counter)->build();
     $this->assert(1 == $this->counter->get_increment(), 'inc is 1');
   }
 
@@ -78,14 +78,14 @@ class object_id_test extends test_case {
   private function generate_ids($count) {
     $ids = array();
     for ($i = 0; $i < $count; $i++) {
-      $id = object_id::create($this->counter);
+      $id = object_id_builder::create($this->counter)->build();
       array_push($ids, $id->to_string());
     }
     return array_unique($ids);
   }
 
   public function test_hex_string() {
-    $id = object_id::create($this->counter);
+    $id = object_id_builder::create($this->counter)->build();
     $hex_str = $id->to_string();
     $compare_id = object_id::create_with_string($hex_str);
     $this->assert_equal($id->to_string(), $compare_id->to_string());
