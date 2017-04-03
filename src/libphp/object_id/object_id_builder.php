@@ -1,16 +1,17 @@
 <?php
 namespace libphp\object_id;
 
+use libphp\object_id\counter;
 use libphp\object_id\object_id;
 
 class object_id_builder {
-  public function __construct($counter) {
+  public function __construct(counter $counter) {
     $this->counter = $counter;
     $this->machine_name = '';
     $this->process_id = 0;
   }
 
-  public static function create($counter) {
+  public static function create(counter $counter) {
     return new self($counter);
   }
 
@@ -26,12 +27,12 @@ class object_id_builder {
     return $this->process_id;
   }
 
-  public function machine_name($name) {
+  public function machine_name(string $name) {
     $this->machine_name = $name;
     return $this;
   }
 
-  public function process_id($id) {
+  public function process_id(int $id) {
     $this->process_id = $id;
     return $this;
   }

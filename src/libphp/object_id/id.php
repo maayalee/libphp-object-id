@@ -16,8 +16,8 @@ abstract class id {
    *
    * @return string 해시한 문자열
    */
-  abstract public function to_hash($size);
+  abstract public function to_hash(int $size);
 
-  abstract public function equal($id);
+  abstract public function equal(id $id);
 }
 

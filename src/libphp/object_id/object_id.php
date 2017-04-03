@@ -30,13 +30,13 @@ class object_id extends id {
   public function __construct() {
   }
 
-  public static function create_with_string($hex) {
+  public static function create_with_string(string $hex) {
     $instance = new object_id();
     $instance->load_string($hex);
     return $instance;
   }
 
-  public static function create_with_builder($builder) {
+  public static function create_with_builder(object_id_builder $builder) {
     $machine_name = $builder->get_machine_name();
     $process_id = $builder->get_process_id();
 
@@ -58,19 +58,20 @@ class object_id extends id {
     return bin2hex($this->binary);
   } 
 
-  public function to_hash($size) {
+  public function to_hash(int $size) {
     return substr(md5($this->binary), 0, $size);
   }
 
-  public function equal($id) {
+  public function equal(id $id) {
     return $id->get_value() ? true : false;
   }
 
-  private function load_string($hex) {
+  private function load_string(string $hex) {
     $this->binary = hex2bin($hex);
   }
 
-  private function generate($counter, $machine_name, $process_id) {
+  private function generate(counter $counter, string $machine_name, 
+    int $process_id) {
     $count = $counter->inc();
     if ($count > self::MAX_INCREMENT_COUNT_PER_SEC)
       throw new increment_count_overflow('');
@@ -81,19 +82,19 @@ class object_id extends id {
     $this->append_increment_count($count);
   }
 
-  protected function append_timestamp($time) {
+  protected function append_timestamp(int $time) {
     $this->binary .= pack(self::ULONG_4BYTE_LE, $time);
   } 
 
-  protected function append_machine_id($name) {
+  protected function append_machine_id(string $name) {
     $this->binary .= substr(md5($name), 0, self::MACHINE_ID_BYTE);
   }
 
-  protected function append_process_id($process_id) {
+  protected function append_process_id(int $process_id) {
     $this->binary .= pack(self::USHORT_2BYTE_LE, $process_id);
   }
 
-  protected function append_increment_count($count) {
+  protected function append_increment_count(int $count) {
     $this->binary .= pack(self::USHORT_2BYTE_LE, $count);
   } 
 
