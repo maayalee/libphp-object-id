@@ -4,6 +4,13 @@ namespace libphp\object_id;
 use libphp\core\time;
 use libphp\object_id\errors\backward_timestamp;
 
+/**
+ * @class counter
+ *
+ * @brief 1초 범위 안에서 증가하는 숫자를 생성하는 클래스. 
+ *
+ * @author Lee, Hyeon-gi
+ */
 abstract class counter {
   public function __construct() {
   }

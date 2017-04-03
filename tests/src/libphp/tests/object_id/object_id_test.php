@@ -72,6 +72,14 @@ class object_id_test extends test_case {
     return array_unique($ids);
   }
 
+  public function test_hex_string() {
+    $id = object_id::create($this->counter);
+    $hex_str = $id->to_string();
+    $compare_id = object_id::create_with_string($hex_str);
+    $this->assert_equal($id->to_string(), $compare_id->to_string());
+  }
+
+
   public function set_up() {
     $this->counter = $this->create_counter();
     $timestamp = time::get_time();
@@ -99,6 +107,7 @@ class object_id_test extends test_case {
     $suite->add(new object_id_test('test_reset_increment'));
     $suite->add(new object_id_test('test_throw_backward_timestamp'));
     $suite->add(new object_id_test('test_throw_increment_count_overflow'));
+    $suite->add(new object_id_test('test_hex_string'));
     return $suite;
   }
 }
