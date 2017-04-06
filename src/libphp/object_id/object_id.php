@@ -99,66 +99,23 @@ class object_id extends id {
   } 
 
   public function get_timestamp() {
-    $this->unpacks();
-    return $this->timestamp;
+    return unpack(self::ULONG_4BYTE_LE, substr($this->binary, 0, 
+      self::TIMESTAMPE_BYTE))[1];
   }
 
   public function get_machine_id() {
-    $this->unpacks();
-    return $this->machine_id;
+    return substr($this->binary, 4, self::MACHINE_ID_BYTE);
   }
 
   public function get_process_id() {
-    $this->unpacks();
-    return $this->process_id;
+    return unpack(self::USHORT_2BYTE_LE, 
+        substr($this->binary, 7, self::PROCESS_ID_BYTE))[1];
   }
 
   public function get_increment_count() {
-    $this->unpacks();
-    return $this->increment_count;
+    return unpack(self::USHORT_2BYTE_LE, 
+        substr($this->binary, 10, self::INCREMENT_COUNT_BYTE))[1];
   }
-
-  /**
-   * 원본 데이터 형태로  아이디 필드 정보드를 언팩한다
-   *
-   * @virtual
-   */ 
-  private function unpacks() {
-    if (!$this->unpacked) {
-      ASSERT(strlen($this->binary) == $this->total_bytes());
-      $result = array();
-      $offset = 0;
-
-      $data = unpack(self::ULONG_4BYTE_LE, 
-        substr($this->binary, $offset, self::TIMESTAMPE_BYTE));
-      $this->timestamp = $data[1];
-      $offset += self::TIMESTAMPE_BYTE;
-
-      $this->machine_id = substr($this->binary, $offset, self::MACHINE_ID_BYTE);
-      $offset += self::MACHINE_ID_BYTE;
-
-      $data = unpack(self::USHORT_2BYTE_LE, 
-        substr($this->binary, $offset, self::PROCESS_ID_BYTE));
-      $this->process_id = $data[1];
-      $offset += self::PROCESS_ID_BYTE;
-
-      $data = unpack(self::USHORT_2BYTE_LE, 
-        substr($this->binary, $offset, self::INCREMENT_COUNT_BYTE));
-      $this->increment_count = $data[1];
-
-      $this->unpacked = true;
-    }
-  }
-
-  private function total_bytes() {
-    return self::TIMESTAMPE_BYTE + self::MACHINE_ID_BYTE + 
-      self::PROCESS_ID_BYTE + self::INCREMENT_COUNT_BYTE;
-  } 
 
   private $binary = '';
-  private $unpacked = false;
-  private $timestamp;
-  private $machine_id;
-  private $process_id;
-  private $increment_count;
 }
