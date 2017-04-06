@@ -63,7 +63,7 @@ class object_id extends id {
   }
 
   public function equal(id $id) {
-    return $id->get_value() ? true : false;
+    return $this->to_string() == $id->to_string();
   }
 
   private function load_string(string $hex) {

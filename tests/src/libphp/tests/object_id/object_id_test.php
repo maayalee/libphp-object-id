@@ -33,6 +33,17 @@ class object_id_test extends test_case {
     $this->assert_equal(substr(md5('test-machine'),0,3), $id->get_machine_id());
   }
 
+  public function test_equal() {
+    $id = object_id_builder::create($this->counter)->build();
+
+    $compare_id = object_id::create_with_string($id->to_string());
+    $this->assert_true($id->equal($compare_id));
+
+    $this->assert_equal($id->get_timestamp(), $compare_id->get_timestamp());
+    $this->assert_equal($id->get_machine_id(), $compare_id->get_machine_id());
+    $this->assert_equal($id->get_process_id(), $compare_id->get_process_id());
+  }
+
   public function test_not_duplicated_ids() {
     $ids = $this->generate_ids(1000);
     $this->assert(count($ids) == 1000, 'not duplicated ids');
@@ -115,6 +126,7 @@ class object_id_test extends test_case {
   public static function create_suite() {
     $suite = new test_suite('object_id_test');
     $suite->add(new object_id_test('test_create_id'));
+    $suite->add(new object_id_test('test_equal'));
     $suite->add(new object_id_test('test_not_duplicated_ids'));
     $suite->add(new object_id_test('test_reset_increment'));
     $suite->add(new object_id_test('test_throw_backward_timestamp'));
