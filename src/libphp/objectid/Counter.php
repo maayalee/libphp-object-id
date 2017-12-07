@@ -19,7 +19,7 @@ abstract class Counter {
   public function inc() {
     $currentTime = $this->getCurrentTime();
     if ($currentTime < $this->lastTime)
-      throw new backward_timestamp('current time is little than last time');
+      throw new BackwardTimestamp('current time is little than last time');
 
     if ($currentTime != $this->lastTime) {
       $this->increment = 0; 

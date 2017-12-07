@@ -1,16 +1,16 @@
 <?php
 namespace libphp\tests\objectid;
 
-use libphp\test\test_case;
-use libphp\test\test_suite;
-use libphp\objectid\id;
-use libphp\objectid\increment_counter;
-use libphp\objectid\objectid;
-use libphp\objectid\objectid_builder;
-use libphp\objectid\errors\increment_count_overflow;
-use libphp\objectid\errors\backward_timestamp;
+use libphp\test\TestCase;
+use libphp\test\TestSuite;
+use libphp\objectid\ID;
+use libphp\objectid\IncrementCounter;
+use libphp\objectid\ObjectID;
+use libphp\objectid\ObjectIDBuilder;
+use libphp\objectid\errors\IncrementCountOverflow;
+use libphp\objectid\errors\BackwardTimestamp;
 
-class ObjectIDTest extends test_case {
+class ObjectIDTest extends TestCase {
   public function __construct($method_name) {
     parent::__construct($method_name);
   }
@@ -46,13 +46,13 @@ class ObjectIDTest extends test_case {
 
   public function testResetIncrement() {
     $id = ObjectIDBuilder::create($this->counter)->build();
-    $this->assert(1 == $this->counter->get_increment(), 'inc is 1');
+    $this->assert(1 == $this->counter->getIncrement(), 'inc is 1');
     $id = ObjectIDBuilder::create($this->counter)->build();
-    $this->assert(2 == $this->counter->get_increment(), 'inc is 2');
+    $this->assert(2 == $this->counter->getIncrement(), 'inc is 2');
 
-    $this->counter->inc_current_time();
+    $this->counter->incCurrentTime();
     $id = ObjectIDBuilder::create($this->counter)->build();
-    $this->assert(1 == $this->counter->get_increment(), 'inc is 1');
+    $this->assert(1 == $this->counter->getIncrement(), 'inc is 1');
   }
 
   public function testThrowBackwardTimestamp() {
@@ -99,7 +99,7 @@ class ObjectIDTest extends test_case {
   public function setUp() {
     $this->counter = $this->createCounter();
     $timestamp = time();
-    $this->counter->set_current_time($timestamp);
+    $this->counter->setCurrentTime($timestamp);
 
   }
 
@@ -107,7 +107,7 @@ class ObjectIDTest extends test_case {
   }
 
   private function createCounter() {
-    return new test_increment_counter();
+    return new TestIncrementCounter();
   }
 
   private function getMaxIncrementCount() {
@@ -117,7 +117,7 @@ class ObjectIDTest extends test_case {
   private $counter;
 
   public static function createSuite() {
-    $suite = new test_suite('ObjectIDTest');
+    $suite = new TestSuite('ObjectIDTest');
     $suite->add(new ObjectIDTest('testCreateID'));
     $suite->add(new ObjectIDTest('testEqual'));
     $suite->add(new ObjectIDTest('testNotDuplicatedIDs'));

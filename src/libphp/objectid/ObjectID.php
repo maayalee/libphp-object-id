@@ -15,7 +15,7 @@ use libphp\objectid\errors\IncrementCountOverflow;
  *
  * @authoer Lee, Hyeon-gi
  */ 
-class ObjectID extends id {
+class ObjectID extends ID {
   const ULONG_4BYTE_LE = "V";
   const USHORT_2BYTE_LE = "v";
 
@@ -75,7 +75,7 @@ class ObjectID extends id {
     if ($count > self::MAX_INCREMENT_COUNT_PER_SEC)
       throw new IncrementCountOverflow('');
 
-    $this->appendTimestamp($counter->get_last_inc_time());
+    $this->appendTimestamp($counter->getLastIncTime());
     $this->appendMachine_id($machineName);
     $this->appendProcessID($processID);
     $this->appendIncrementCount($count);
@@ -97,11 +97,11 @@ class ObjectID extends id {
     $this->binary .= pack(self::USHORT_2BYTE_LE, $count);
   } 
 
-  public function get_timestamp() {
+  public function getTimestamp() {
     return unpack(self::ULONG_4BYTE_LE, substr($this->binary, 0, self::TIMESTAMPE_BYTE))[1];
   }
 
-  public function get_machine_id() {
+  public function getMachineID() {
     return substr($this->binary, 4, self::MACHINE_ID_BYTE);
   }
 

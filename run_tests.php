@@ -8,7 +8,7 @@ date_default_timezone_set('asia/seoul');
 use libphp\test\TestRunner;
 use libphp\tests\test\TestCaseTest;
 use libphp\tests\test\TestRunnerTest;
-use libphp\tests\object_id\ObjectIDTest;
+use libphp\tests\objectid\ObjectIDTest;
 
 $runner = new TestRunner();
 $runner->add(TestCaseTest::createSuite());
