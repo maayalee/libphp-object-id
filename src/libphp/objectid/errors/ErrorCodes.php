@@ -1,7 +1,7 @@
 <?php
-namespace libphp\object_id\errors;
+namespace libphp\objectid\errors;
 
-class error_codes {
+class ErrorCodes {
   const ERROR_CODE_BACKWARD_TIMESTAMP = 1;
   const ERROR_CODE_INCREMENT_COUNT_OVERFLOW = 2;
 }

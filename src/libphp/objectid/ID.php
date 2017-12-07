@@ -1,14 +1,14 @@
 <?php
-namespace libphp\object_id;
+namespace libphp\objectid;
 
 /**
- * @class id
+ * @class ID
  *
  * @birief Unique Identifier 처리를 위한 베이스 클래스
  * @author Lee, Hyeon-gi
  */
-abstract class id {  
-  abstract public function to_string(); 
+abstract class ID {  
+  abstract public function toString(); 
   /**
    * 문자열 타입으로 해시한 값을 되돌려준다.
    *
@@ -16,7 +16,7 @@ abstract class id {
    *
    * @return string 해시한 문자열
    */
-  abstract public function to_hash(int $size);
+  abstract public function toHash(int $size);
 
   abstract public function equal(id $id);
 }

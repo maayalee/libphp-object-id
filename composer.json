@@ -4,18 +4,18 @@
   "description":"",
   "autoload": {
     "psr-4": {
-      "libphp\\object_id\\":"src/libphp/object_id",
-      "libphp\\tests\\object_id\\":"tests/src/libphp/tests/object_id"
+      "libphp\\":"src/libphp",
+      "libphp\\tests\\":"tests/src/libphp/tests"
     }
   },
   "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/maayalee/libphp-core.git"
+            "url": "https://github.com/maayalee/libphp-unittest.git"
         }
   ],
   "require": {
-        "libphp-core": "dev-master"
+        "libphp-unittest": "dev-master"
   },
   "license":"MIT",
   "authors": [

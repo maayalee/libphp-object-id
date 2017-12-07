@@ -1,8 +1,7 @@
 <?php
-namespace libphp\object_id\errors;
+namespace libphp\objectid\errors;
 
-
-class object_id_error extends \Exception {
+class ObjectIDError extends \Exception {
   public function __construct($msg, $code) {
     parent::__construct($msg, $code);
   } 
